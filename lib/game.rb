@@ -20,6 +20,11 @@ class Game
     puts "#{@possessor} has won the coin toss and has elected to defer.\n\n"
   end
 
+  def announce_down_and_distance
+    puts "-" * 50
+    puts "It's #{@down.ordinalize} and #{@distance}. #{@possessor} has the ball on #{field_position} yard line."
+  end
+
   def kick_off
     puts "-" * 50
     puts "#{@possessor} kicks the ball"
@@ -42,17 +47,20 @@ class Game
 
       if @down == 4
         if in_field_goal_range?
+          announce_down_and_distance
           attempt_field_goal
           break
         end
         if in_the_red_zone? && @distance == 1
           continue
         else
+          announce_down_and_distance
           punt
           break
         end
       end
 
+      announce_down_and_distance
       run_play
     end
   end
@@ -65,8 +73,6 @@ class Game
   end
 
   def attempt_field_goal
-    puts "-" * 50
-    puts "It's #{@down.ordinalize} and #{distance}. #{@possessor} has the ball on #{field_position} yard line."
     puts "Field goal attempt #{field_goal_attempt} yards"
     if rand(1..100) > 50
       puts "It's good!"
@@ -85,19 +91,21 @@ class Game
   end
 
   def punt
-    puts "-" * 50
-    puts "It's #{@down.ordinalize} and #{@distance}. #{@possessor} has the ball on #{field_position} yard line."
+    # ball_on = 45
+    # yards_gained = 30
     puts "#{@possessor} punts the ball"
-    change_possession
+    yards_gained = @possessor.punt(@ball_on)
+    puts "It's a #{yards_gained} yard punt"
+    @ball_on += yards_gained
+    change_possession(false)
+    puts "#{@possessor} takes over at #{field_position}"
   end
 
   def run_play
-    puts "-" * 50
-    puts "It's #{@down.ordinalize} and #{distance}. #{@possessor} has the ball on #{field_position} yard line."
     o_play = @possessor.get_play(:offense)
     d_play = non_possessor.get_play(:defense)
 
-    yards_gained = o_play.execute(d_play)
+    yards_gained = o_play.execute(@ball_on, d_play)
     puts "The #{o_play.type} goes for #{yards_gained} yards"
 
     set_down(yards_gained)
@@ -127,7 +135,17 @@ class Game
     @down = 1
     @distance = 10
     @goal_to_go = false
-    reset_ball if reset # E.g., don't reset after a missed field goal
+    if reset
+      # E.g., don't reset after a missed field goal
+      reset_ball
+    else
+      # E.g., after a punt
+      flip_field
+    end
+  end
+
+  def flip_field
+    @ball_on = 100 - @ball_on
   end
 
   def reset_ball

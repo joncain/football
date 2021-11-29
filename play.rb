@@ -9,7 +9,7 @@ game.announce_welcome
 game.announce_coin_toss
 game.kick_off
 
-2.times do |i|
+10.times do |i|
   puts "\nPOSSESSION #{i}"
   game.run_possession
 end

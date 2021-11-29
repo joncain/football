@@ -1,4 +1,5 @@
 require './lib/play.rb'
+require './lib/punter.rb'
 
 class Team
   attr_accessor :name, :venue,
@@ -15,6 +16,11 @@ class Team
 
   def get_play(phase)
     playbook.select{|play| play.phase == phase}.sample
+  end
+
+  def punt(ball_on)
+    # TODO: vary punter skills
+    Punter.new.punt(ball_on)
   end
 
   def to_s
