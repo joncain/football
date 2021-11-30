@@ -4,23 +4,44 @@ require './lib/punter.rb'
 class Team
   attr_accessor :name, :venue,
                 :is_home_team, :score,
-                :field_goal_range
+                :field_goal_range, :plays_run
 
-  def initialize(name, venue = nil, is_home_team = false, field_goal_range = 40)
+  def initialize(name, venue = nil, is_home_team = false)
     @name = name
     @venue = venue
     @is_home_team = is_home_team
     @score = 0
     @field_goal_range = 40
+    @plays_run = {
+      offense: [],
+      :defense => [],
+      :special => []
+    }
   end
 
   def get_play(phase)
-    playbook.select{|play| play.phase == phase}.sample
+    play = playbook.select{|play| play.phase == phase}.sample
+    @plays_run[phase] << play
+    play
   end
 
   def punt(ball_on)
     # TODO: vary punter skills
     Punter.new.punt(ball_on)
+  end
+
+  def game_stats
+    runs = @plays_run[:offense].select {|play| play.type == :run}
+    passes = @plays_run[:offense].select {|play| play.type == :pass}
+    {
+      team: @name,
+      total_plays: plays_run[:offense].count,
+      run_att: runs.count,
+      pass_att: passes.count,
+      total_yds: plays_run[:offense].sum {|play| play.result},
+      run_yds: runs.sum {|play| play.result},
+      pass_yds: passes.sum {|play| play.result}
+    }
   end
 
   def to_s

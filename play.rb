@@ -16,3 +16,8 @@ end
 
 puts "*" * 50
 puts "#{team1} #{team1.score} - #{team2} #{team2.score}"
+
+puts "-" * 50
+puts "Game Stats"
+
+game.summary

@@ -20,11 +20,6 @@ class Game
     puts "#{@possessor} has won the coin toss and has elected to defer.\n\n"
   end
 
-  def announce_down_and_distance
-    puts "-" * 50
-    puts "It's #{@down.ordinalize} and #{@distance}. #{@possessor} has the ball on #{field_position} yard line."
-  end
-
   def kick_off
     puts "-" * 50
     puts "#{@possessor} kicks the ball"
@@ -34,9 +29,9 @@ class Game
   end
 
   def run_possession
-    while true do
+    loop do
       if @ball_on < 0
-        saftey
+        safety
         break
       end
 
@@ -47,14 +42,12 @@ class Game
 
       if @down == 4
         if in_field_goal_range?
-          announce_down_and_distance
           attempt_field_goal
           break
         end
         if in_the_red_zone? && @distance == 1
           continue
         else
-          announce_down_and_distance
           punt
           break
         end
@@ -62,6 +55,17 @@ class Game
 
       announce_down_and_distance
       run_play
+    end
+  end
+
+  def summary
+    # , 'Total Plays', 'Run Plays', 'Pass Plays', 'Total Yds', 'Run Yds', 'Pass Yds'
+    format = '%-12s %-5s %-3s %-8s %-8s %-8s %-8s'
+    puts format % ['Team', 'Plays', 'Yds', 'Pass Att', 'Pass Yds', 'Run Att', 'Run Yds']
+
+    [@team1, @team2].each do |team|
+      stats = team.game_stats
+      puts format % [team.name, stats[:total_plays], stats[:total_yds], stats[:pass_att], stats[:pass_yds], stats[:run_att], stats[:run_yds]]
     end
   end
 
@@ -73,6 +77,8 @@ class Game
   end
 
   def attempt_field_goal
+    announce_down_and_distance
+
     puts "Field goal attempt #{field_goal_attempt} yards"
     if rand(1..100) > 50
       puts "It's good!"
@@ -91,24 +97,24 @@ class Game
   end
 
   def punt
-    # ball_on = 45
-    # yards_gained = 30
+    announce_down_and_distance
+
     puts "#{@possessor} punts the ball"
-    yards_gained = @possessor.punt(@ball_on)
-    puts "It's a #{yards_gained} yard punt"
-    @ball_on += yards_gained
+    punt_yards = @possessor.punt(@ball_on)
+
+    puts "It's a #{punt_yards} yard punt"
+    @ball_on += punt_yards
     change_possession(false)
-    puts "#{@possessor} takes over at #{field_position}"
   end
 
   def run_play
     o_play = @possessor.get_play(:offense)
     d_play = non_possessor.get_play(:defense)
 
-    yards_gained = o_play.execute(@ball_on, d_play)
-    puts "The #{o_play.type} goes for #{yards_gained} yards"
+    o_play.execute(@ball_on, d_play)
+    puts "The #{o_play.type} goes for #{o_play.result} yards"
 
-    set_down(yards_gained)
+    set_down(o_play.result)
   end 
 
   def set_down(yards_gained)
@@ -190,4 +196,8 @@ class Game
     true if @possessor.field_goal_range >= field_goal_attempt
   end
 
+  def announce_down_and_distance
+    puts "-" * 50
+    puts "It's #{@down.ordinalize} and #{@distance}. #{@possessor} ball on #{field_position} yard line."
+  end
 end

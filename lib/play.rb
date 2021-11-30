@@ -1,5 +1,5 @@
 class Play
-  attr_accessor :phase, :type, :strength
+  attr_accessor :phase, :type, :strength, :result
 
   def initialize(phase, type, strength)
     @phase = phase # offense or defense
@@ -15,7 +15,7 @@ class Play
     strength_multiplier = @strength - d_play.strength
     yards_gained = @strength * (chess_multiplier + strength_multiplier)
     max_yards = 100 - ball_on
-    yards_gained <= max_yards ? yards_gained : max_yards
+    @result = yards_gained <= max_yards ? yards_gained : max_yards
   end
 
   def to_s
