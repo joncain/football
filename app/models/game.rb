@@ -59,13 +59,29 @@ class Game
   end
 
   def summary
-    # , 'Total Plays', 'Run Plays', 'Pass Plays', 'Total Yds', 'Run Yds', 'Pass Yds'
-    format = '%-12s %-5s %-3s %-8s %-8s %-8s %-8s'
-    puts format % ['Team', 'Plays', 'Yds', 'Pass Att', 'Pass Yds', 'Run Att', 'Run Yds']
+    columns = {
+      Team: 12,
+      Score: 5,
+      "Plays": 10,
+      "Run Plays": 9,
+      "Pass Plays": 10,
+      "Yards": 5,
+      "Run Yds": 7,
+      "Pass Yds": 8
+    }
+    header_format = columns.map {|k, v|
+      k == :Team ? "%-#{v}s" : "%#{v}s"
+    }.join("|")
+    puts header_format % columns.keys
+
+    row_format = columns.map {|k, v|
+      k == :Team ? "%-#{v}s" : "%#{v}d"
+    }.join("|")
+    # puts header_format
+    # puts row_format
 
     [@team1, @team2].each do |team|
-      stats = team.game_stats
-      puts format % [team.name, stats[:total_plays], stats[:total_yds], stats[:pass_att], stats[:pass_yds], stats[:run_att], stats[:run_yds]]
+      puts row_format % team.game_stats
     end
   end
 
@@ -92,7 +108,7 @@ class Game
 
   def safety
     puts "SAFETY!!"
-    not_possessor.score += 2
+    non_possessor.score += 2
     kick_off
   end
 
@@ -104,6 +120,7 @@ class Game
 
     puts "It's a #{punt_yards} yard punt"
     @ball_on += punt_yards
+
     change_possession(false)
   end
 
@@ -143,7 +160,7 @@ class Game
     @goal_to_go = false
     if reset
       # E.g., don't reset after a missed field goal
-      reset_ball
+      place_ball
     else
       # E.g., after a punt
       flip_field
@@ -154,7 +171,7 @@ class Game
     @ball_on = 100 - @ball_on
   end
 
-  def reset_ball
+  def place_ball
     @ball_on = 25
   end
 

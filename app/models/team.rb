@@ -1,15 +1,11 @@
-require './lib/play.rb'
-require './lib/punter.rb'
-
 class Team
   attr_accessor :name, :venue,
                 :is_home_team, :score,
                 :field_goal_range, :plays_run
 
-  def initialize(name, venue = nil, is_home_team = false)
+  def initialize(name)
     @name = name
-    @venue = venue
-    @is_home_team = is_home_team
+    @is_home_team = false
     @score = 0
     @field_goal_range = 40
     @plays_run = {
@@ -33,15 +29,16 @@ class Team
   def game_stats
     runs = @plays_run[:offense].select {|play| play.type == :run}
     passes = @plays_run[:offense].select {|play| play.type == :pass}
-    {
-      team: @name,
-      total_plays: plays_run[:offense].count,
-      run_att: runs.count,
-      pass_att: passes.count,
-      total_yds: plays_run[:offense].sum {|play| play.result},
-      run_yds: runs.sum {|play| play.result},
-      pass_yds: passes.sum {|play| play.result}
-    }
+    [
+      @name,
+      @score,
+      plays_run[:offense].count, #Total plays
+      runs.count, # Run plays
+      passes.count, # Pass plays
+      plays_run[:offense].sum {|play| play.result}, # Total yard
+      runs.sum {|play| play.result}, # Run yards
+      passes.sum {|play| play.result} # Pass yards
+  ]
   end
 
   def to_s
