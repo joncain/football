@@ -1,7 +1,8 @@
 class Team
   attr_accessor :name, :venue,
                 :is_home_team, :score,
-                :field_goal_range, :plays_run
+                :field_goal_range, :plays_run,
+                :punter
 
   def initialize(name)
     @name = name
@@ -13,17 +14,15 @@ class Team
       :defense => [],
       :special => []
     }
+    @punter = Punter.new
   end
 
-  def get_play(phase)
-    play = playbook.select{|play| play.phase == phase}.sample
+  def get_play(phase, type = nil)
+    play = playbook.select{|play|
+      play.phase == phase && (type.nil? || play.type == type)
+    }.sample
     @plays_run[phase] << play
     play
-  end
-
-  def punt(ball_on)
-    # TODO: vary punter skills
-    Punter.new.punt(ball_on)
   end
 
   def game_stats
@@ -68,7 +67,9 @@ class Team
         Play.new(:defense, :pass, 2),
         Play.new(:defense, :pass, 3),
         Play.new(:defense, :pass, 4),
-        Play.new(:defense, :pass, 5)
+        Play.new(:defense, :pass, 5),
+        Punt.new(:special, :punt),
+        Play.new(:special, :kickoff)
       ]
   end
 end

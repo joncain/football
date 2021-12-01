@@ -48,5 +48,20 @@ describe Team do
         assert @team.plays_run[phase].include?(play)
       end
     end
+
+    describe "special" do
+      phase = :special
+
+      describe "punt" do
+        it "gets a punt play" do
+          play = @team.get_play(phase, :punt)
+          assert play.type == :punt
+        end
+        it "records a play" do
+          play = @team.get_play(phase, :punt)
+          assert @team.plays_run[phase].include?(play)
+        end
+      end
+    end
   end
 end

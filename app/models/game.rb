@@ -116,7 +116,8 @@ class Game
     announce_down_and_distance
 
     puts "#{@possessor} punts the ball"
-    punt_yards = @possessor.punt(@ball_on)
+    play = @possessor.get_play(:special, :punt)
+    punt_yards = play.execute(@ball_on, nil, @possessor.punter)
 
     puts "It's a #{punt_yards} yard punt"
     @ball_on += punt_yards
