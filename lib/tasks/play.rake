@@ -11,7 +11,7 @@ task :play => :environment do
   game.announce_coin_toss
   game.kick_off
   
-  2.times do |i|
+  20.times do |i|
     puts "\nPOSSESSION #{i}"
     game.run_possession
   end
