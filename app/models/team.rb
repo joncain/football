@@ -1,12 +1,12 @@
 class Team
   attr_accessor :name, :venue,
-                :is_home_team, :score,
+                :home_team, :score,
                 :field_goal_range, :plays_run,
-                :punter
+                :punter, :kicker
 
   def initialize(name)
     @name = name
-    @is_home_team = false
+    @home_team = false
     @score = 0
     @field_goal_range = 40
     @plays_run = {
@@ -15,6 +15,7 @@ class Team
       :special => []
     }
     @punter = Punter.new
+    @kicker = Kicker.new
   end
 
   def get_play(phase, type = nil)
@@ -69,7 +70,7 @@ class Team
         Play.new(:defense, :pass, 4),
         Play.new(:defense, :pass, 5),
         Punt.new(:special, :punt),
-        Play.new(:special, :kickoff)
+        Kickoff.new(:special, :kick)
       ]
   end
 end

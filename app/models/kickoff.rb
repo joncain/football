@@ -1,6 +1,6 @@
-class Punt < Play
+class Kickoff < Play
   def execute(ball_on, d_play, team)
     # TODO: implement defense
-    team.punter.punt(ball_on)
+    team.kicker.kick(ball_on)
   end
 end

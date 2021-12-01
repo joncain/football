@@ -1,6 +1,8 @@
 require 'active_support/core_ext/integer/inflections'
 
 class Game
+  attr_reader :possessor, :ball_on
+
   def initialize(team1, team2)
     @quarter = 1
     @clock = 15 * 60
@@ -8,6 +10,9 @@ class Game
     @team1 = team1
     @team2 = team2
     @possessor = coin_toss
+    @down = 1
+    @distance = 10
+    place_ball
   end
 
   def announce_welcome
@@ -20,12 +25,16 @@ class Game
     puts "#{@possessor} has won the coin toss and has elected to defer.\n\n"
   end
 
-  def kick_off
-    puts "-" * 50
-    puts "#{@possessor} kicks the ball"
-    change_possession
-    puts "#{@possessor} calls for a fair catch. The ball will be spotted at the #{@possessor} 25 yard line."
-    @ball_on = 25
+  def kick(type)
+    play = @possessor.get_play(:special, type)
+    kick_yards = play.execute(@ball_on, nil, @possessor)
+
+    puts "#{@possessor} #{type}s the ball"
+    puts "It's a #{kick_yards} yard #{type}"
+
+    @ball_on += kick_yards
+    change_possession(false)
+    kick_yards
   end
 
   def run_possession
@@ -42,13 +51,15 @@ class Game
 
       if @down == 4
         if in_field_goal_range?
+          announce_down_and_distance
           attempt_field_goal
           break
         end
         if in_the_red_zone? && @distance == 1
           continue
         else
-          punt
+          announce_down_and_distance
+          kick(:punt)
           break
         end
       end
@@ -89,17 +100,17 @@ class Game
   def touchdown
     puts "TOUCHDOWN!! #{@possessor}"
     @possessor.score += 7
-    kick_off
+    place_ball
+    kick(:kick)
   end
 
   def attempt_field_goal
-    announce_down_and_distance
-
     puts "Field goal attempt #{field_goal_attempt} yards"
     if rand(1..100) > 50
       puts "It's good!"
       @possessor.score += 3
-      change_possession
+      place_ball
+      kick(:kick)
     else
       puts "It's no good!"
       change_possession(false)
@@ -109,19 +120,7 @@ class Game
   def safety
     puts "SAFETY!!"
     non_possessor.score += 2
-    kick_off
-  end
-
-  def punt
-    announce_down_and_distance
-    play = @possessor.get_play(:special, :punt)
-    punt_yards = play.execute(@ball_on, nil, @possessor.punter)
-
-    puts "#{@possessor} punts the ball"
-    puts "It's a #{punt_yards} yard punt"
-
-    @ball_on += punt_yards
-    change_possession(false)
+    kick(:kick)
   end
 
   def run_play
@@ -180,7 +179,7 @@ class Game
   end
 
   def venue
-    @team1.is_home_team ? @team1.venue : @team2.venue
+    @team1.home_team ? @team1.venue : @team2.venue
   end
 
   def field_position

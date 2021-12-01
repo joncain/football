@@ -9,8 +9,8 @@ describe Team do
     it "sets @name" do
       assert_equal(@team.name, "YYZ")
     end
-    it "defaults @is_home_team to false" do
-      assert_equal(@team.is_home_team, false)
+    it "defaults @home_team to false" do
+      assert_equal(@team.home_team, false)
     end
     it "defaults @score to 0" do
       assert_equal(@team.score, 0)
@@ -59,6 +59,17 @@ describe Team do
         end
         it "records a play" do
           play = @team.get_play(phase, :punt)
+          assert @team.plays_run[phase].include?(play)
+        end
+      end
+
+      describe "kick" do
+        it "gets a kick play" do
+          play = @team.get_play(phase, :kick)
+          assert play.type == :kick
+        end
+        it "records a play" do
+          play = @team.get_play(phase, :kick)
           assert @team.plays_run[phase].include?(play)
         end
       end
