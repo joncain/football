@@ -24,10 +24,15 @@ describe Play do
       @o_run_3.execute(0, @d_pass_0)
       assert_equal(15, @o_run_3.result)
     end
-
     it "doesn't gain more than max yards possible" do
       @o_run_3.execute(95, @d_pass_0)
       assert_equal(5, @o_run_3.result)
+    end
+  end
+
+  describe "verb" do
+    it "defines verb as type" do
+      assert_equal(@o_run_3.verb, @o_run_3.type)
     end
   end
 end

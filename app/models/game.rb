@@ -1,7 +1,7 @@
 require 'active_support/core_ext/integer/inflections'
 
 class Game
-  attr_reader :possessor, :ball_on
+  attr_reader :possessor, :ball_on, :down, :distance
 
   def initialize(team1, team2)
     @quarter = 1
@@ -17,20 +17,16 @@ class Game
 
   def announce_welcome
     puts "Welcome to beautiful #{venue}."
-    # sleep 0.5
     puts "Today's matchup is #{@team1} vs #{@team2}."
-  end
-
-  def announce_coin_toss
     puts "#{@possessor} has won the coin toss and has elected to defer.\n\n"
   end
 
-  def kick(type)
+  def kick(type = :kickoff)
     play = @possessor.get_play(:special, type)
     kick_yards = play.execute(@ball_on, nil, @possessor)
 
-    puts "#{@possessor} #{type}s the ball"
-    puts "It's a #{kick_yards} yard #{type}"
+    puts "#{@possessor} #{play.verb}s the ball"
+    puts "It's a #{kick_yards} yard #{play.verb}"
 
     @ball_on += kick_yards
     change_possession(false)
@@ -95,13 +91,18 @@ class Game
       puts row_format % team.game_stats
     end
   end
-
+  
+  def non_possessor
+    @possessor == @team1 ? @team2 : @team1
+  end
+  
   private
+  
   def touchdown
     puts "TOUCHDOWN!! #{@possessor}"
     @possessor.score += 7
     place_ball
-    kick(:kick)
+    kick
   end
 
   def attempt_field_goal
@@ -110,7 +111,7 @@ class Game
       puts "It's good!"
       @possessor.score += 3
       place_ball
-      kick(:kick)
+      kick
     else
       puts "It's no good!"
       change_possession(false)
@@ -120,7 +121,7 @@ class Game
   def safety
     puts "SAFETY!!"
     non_possessor.score += 2
-    kick(:kick)
+    kick
   end
 
   def run_play
@@ -174,10 +175,6 @@ class Game
     @ball_on = 25
   end
 
-  def non_possessor
-    @possessor == @team1 ? @team2 : @team1
-  end
-
   def venue
     @team1.home_team ? @team1.venue : @team2.venue
   end
@@ -196,7 +193,7 @@ class Game
     @ball_on >= 80
   end
 
-  def distance
+  def calculated_distance
     if @goal_to_go
       "Goal"
     else
@@ -214,6 +211,6 @@ class Game
 
   def announce_down_and_distance
     puts "-" * 50
-    puts "It's #{@down.ordinalize} and #{@distance}. #{@possessor} ball on #{field_position} yard line."
+    puts "It's #{@down.ordinalize} and #{calculated_distance}. #{@possessor} ball on #{field_position} yard line."
   end
 end

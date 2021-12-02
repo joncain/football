@@ -65,11 +65,11 @@ describe Team do
 
       describe "kick" do
         it "gets a kick play" do
-          play = @team.get_play(phase, :kick)
-          assert play.type == :kick
+          play = @team.get_play(phase, :kickoff)
+          assert play.type == :kickoff
         end
         it "records a play" do
-          play = @team.get_play(phase, :kick)
+          play = @team.get_play(phase, :kickoff)
           assert @team.plays_run[phase].include?(play)
         end
       end

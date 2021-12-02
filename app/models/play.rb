@@ -1,9 +1,11 @@
 class Play
-  attr_accessor :phase, :type, :strength, :result
-
+  attr_accessor :phase, :type,
+                :strength, :result
+  attr_reader :verb
   def initialize(phase, type, strength = nil)
     @phase = phase # offense or defense
     @type = type # run|pass
+    @verb = type
     @strength = strength # determines outcome when compared to opposing play
   end
 

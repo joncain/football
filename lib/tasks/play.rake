@@ -8,10 +8,11 @@ task :play => :environment do
   game = Game.new(team1, team2)
   puts "*" * 50
   game.announce_welcome
-  game.announce_coin_toss
-  game.kick(:kick)
+  puts "*" * 50
+
+  game.kick
   
-  4.times do |i|
+  2.times do |i|
     puts "\nPOSSESSION #{i}"
     game.run_possession
   end

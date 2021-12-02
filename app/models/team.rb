@@ -70,7 +70,7 @@ class Team
         Play.new(:defense, :pass, 4),
         Play.new(:defense, :pass, 5),
         Punt.new(:special, :punt),
-        Kickoff.new(:special, :kick)
+        Kickoff.new(:special, :kickoff)
       ]
   end
 end
