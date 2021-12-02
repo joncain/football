@@ -24,16 +24,30 @@ describe Game do
   end
 
   describe "kick" do
-    it "results in a touchback" do
-      assert_equal(25, @game.ball_on)
-      result = @game.kick
-      assert_equal(25, @game.ball_on)
-      assert_equal(50, result)
+    describe "kickoff" do
+      it "results in a touchback" do
+        assert_equal(25, @game.ball_on)
+        result = @game.kick
+        assert_equal(25, @game.ball_on)
+        assert_equal(50, result)
+      end
+      it "changes possessor" do
+        before = @game.possessor
+        @game.kick
+        refute_equal(before, @game.possessor)
+      end
     end
-    it "changes possessor" do
-      before = @game.possessor
-      @game.kick
-      refute_equal(before, @game.possessor)
+
+    describe "punt" do
+      it "places the ball in the correct spot" do
+        assert_equal(25, @game.ball_on)
+        @game.possessor.punter.stub :punt, 44 do
+          @game.kick(:punt)
+          # Ball should be placed @ 69
+          # Then the field is flipped
+          assert_equal(31, @game.ball_on)
+        end
+      end
     end
   end
 
