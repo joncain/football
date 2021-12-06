@@ -45,22 +45,30 @@ class Game
         break
       end
 
-      if @down == 4
-        if in_field_goal_range?
-          announce_down_and_distance
-          attempt_field_goal
+      case @down
+        when 5
+          puts "#{@possessor} turns it over on downs"
+          change_possession(false)
           break
-        end
-        if in_the_red_zone? && @distance == 1
-          continue
-        else
-          announce_down_and_distance
-          kick(:punt)
-          break
-        end
+        when 4
+          if in_field_goal_range?
+            announce_down_and_distance
+            attempt_field_goal
+            break
+          end
+          if in_the_red_zone? && @distance == 1
+            continue
+          else
+            announce_down_and_distance
+            puts "Go for it?"
+            unless STDIN.gets.strip == "y"
+              kick(:punt) 
+              break
+            end
+          end
       end
 
-      announce_down_and_distance
+      announce_down_and_distance unless @down == 4
       run_play
     end
   end

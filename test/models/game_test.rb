@@ -44,7 +44,8 @@ describe Game do
         @game.possessor.punter.stub :punt, 44 do
           @game.kick(:punt)
           # Ball should be placed @ 69
-          # Then the field is flipped
+          # Then the field is "flipped", which
+          # places the ball @ 31
           assert_equal(31, @game.ball_on)
         end
       end
@@ -67,12 +68,14 @@ describe Game do
 
       @game.possessor.stub :get_play, get_play_spy do
         @game.non_possessor.stub :get_play, get_play_spy do
-          # Plays are mocked to match which will result in 0 yards gained
-          # Punt is mocked to -10 yards
-          @game.run_possession
-          assert_equal(85, @game.ball_on)
-          assert_equal(1, @game.down)
-          assert_equal(10, @game.distance)
+          STDIN.stub :gets, "n\n" do
+            # Plays are mocked to match which will result in 0 yards gained
+            # Punt is mocked to -10 yards
+            @game.run_possession
+            assert_equal(85, @game.ball_on)
+            assert_equal(1, @game.down)
+            assert_equal(10, @game.distance)
+          end
         end
       end
     end
